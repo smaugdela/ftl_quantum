@@ -1,6 +1,6 @@
 # Deutsch-Jozsa
 
-from typing import Dict, Literal
+from typing import Dict
 from qiskit import QuantumCircuit, transpile
 from qiskit.visualization import plot_histogram
 from qiskit.result import Result
