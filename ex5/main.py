@@ -7,6 +7,7 @@ from qiskit.result import Result
 from qiskit_aer import AerSimulator, AerJob
 from matplotlib import pyplot as plt
 
+
 SHOTS = 500
 
 

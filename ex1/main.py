@@ -12,7 +12,6 @@ def main():
 
     service = QiskitRuntimeService(channel="ibm_quantum", token=token)
 
-
     try:
         backends = service.backends()
         simulators = {backend for backend in backends if backend.configuration().simulator}
@@ -33,7 +32,6 @@ def main():
             config = backend.configuration()
             qbits = config.n_qubits
             print(f'\t{name} has {jobs} queues with {qbits} qubits')
-
 
     except Exception as e:
         print(f"An error occured: {e}")

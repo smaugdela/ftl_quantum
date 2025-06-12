@@ -7,6 +7,7 @@ from qiskit.result import Result
 from qiskit_aer import AerSimulator, AerJob
 from matplotlib import pyplot as plt
 
+
 SHOTS = 500
 
 
@@ -16,8 +17,7 @@ def main():
     qc.cx(0, 1)
     qc.measure_all()
 
-    sketch: str = qc.draw("text")
-    print(sketch)
+    qc.draw("mpl")
 
     backend = AerSimulator()
     qc_compile = transpile(qc, backend=backend)

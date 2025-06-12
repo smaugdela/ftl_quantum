@@ -9,6 +9,7 @@ from qiskit.visualization import plot_histogram
 from qiskit_aer import AerSimulator
 from matplotlib import pyplot as plt
 
+
 SHOTS = 500
 
 
@@ -23,12 +24,11 @@ def state_init(Y: int) -> QuantumCircuit:
     return qc
 
 
-
 def random_oracle_generator(Y: int) -> QuantumCircuit:
     qc = QuantumCircuit(Y + 1, name="Oracle")
 
-    # num_solutions = random.randint(1, 3)
-    num_solutions = 1   # Debug
+    num_solutions = random.randint(1, 3)
+    # num_solutions = 1   # Debug
 
     print(f"Number of solutions: {num_solutions}")
     solutions: List[int] = random.sample(range(2 ** Y), num_solutions)
@@ -38,7 +38,6 @@ def random_oracle_generator(Y: int) -> QuantumCircuit:
         for i, bit in enumerate(solution):
             if bit == '0':
                 qc.x(i)
-        # qc.mcp(1, list(range(Y)), Y)  # Multi-controlled Toffoli gate
         qc.mcx(list(range(Y)), Y)
         for i, bit in enumerate(solution):
             if bit == '0':
@@ -82,16 +81,13 @@ def main():
     qc.compose(state_init(N), inplace=True)
     oracle = random_oracle_generator(N)
 
-    # Apply t time the oracle and diffuser
+    # Apply 'iterations' time the oracle and diffuser
     iterations = math.floor((math.pi/4) * math.sqrt(2**N))
     for _ in range(iterations):
         qc.compose(oracle, inplace=True)
         qc.compose(diffuser(N), inplace=True)
 
     qc.measure(range(N), range(N))
-
-    # qc.draw("mpl")
-    # plt.show()
 
     qc_compiled = transpile(qc, backend=backend)
     result: Result = backend.run(qc_compiled, shots=SHOTS).result()
