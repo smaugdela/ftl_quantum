@@ -57,34 +57,35 @@ def constant_oracle_definition() -> QuantumCircuit:
 
 def main():
 
-    backend = AerSimulator()
+    try:
+        backend = AerSimulator()
 
-    constant_oracle = constant_oracle_definition()
+        constant_oracle = constant_oracle_definition()
 
-    # Balanced example
-    balanced_oracle = balanced_oracle_definition()
+        # Balanced example
+        balanced_oracle = balanced_oracle_definition()
 
-    for oracle in [balanced_oracle, constant_oracle]:
+        for oracle in [balanced_oracle, constant_oracle]:
 
-        qc = deutsch_jozsa_algorithm(oracle)
+            qc = deutsch_jozsa_algorithm(oracle)
+            qc.draw("mpl")
 
-        sketch: str = qc.draw("text")
-        print(sketch)
+            qc_compile = transpile(qc, backend=backend)
+            job: AerJob = backend.run(qc_compile, shots=SHOTS)
+            result: Result = job.result()
+            counts: Dict = result.get_counts(qc_compile)
 
-        qc_compile = transpile(qc, backend=backend)
-        job: AerJob = backend.run(qc_compile, shots=SHOTS)
-        result: Result = job.result()
-        counts: Dict = result.get_counts(qc_compile)
+            if counts.get("000"):
+                print("This oracle is constant.")
+            else:
+                print("This oracle is balanced.")
 
-        if counts.get("000"):
-            print("This oracle is constant.")
-        else:
-            print("This oracle is balanced.")
+            counts = {key: value / SHOTS for key, value in counts.items()}
+            plot_histogram(counts)
+            plt.show()
 
-        qc.draw("mpl")
-        counts = {key: value / SHOTS for key, value in counts.items()}
-        plot_histogram(counts)
-        plt.show()
+    except Exception as e:
+        print(f"Error: {e}")
 
 
 if __name__ == "__main__":

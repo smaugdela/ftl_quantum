@@ -72,30 +72,34 @@ def diffuser(Y: int) -> QuantumCircuit:
 
 def main():
 
-    N = 4
+    try:
+        N = 4
 
-    backend = AerSimulator()
+        backend = AerSimulator()
 
-    qc = QuantumCircuit(N + 1, N)
+        qc = QuantumCircuit(N + 1, N)
 
-    qc.compose(state_init(N), inplace=True)
-    oracle = random_oracle_generator(N)
+        qc.compose(state_init(N), inplace=True)
+        oracle = random_oracle_generator(N)
 
-    # Apply 'iterations' time the oracle and diffuser
-    iterations = math.floor((math.pi/4) * math.sqrt(2**N))
-    for _ in range(iterations):
-        qc.compose(oracle, inplace=True)
-        qc.compose(diffuser(N), inplace=True)
+        # Apply 'iterations' time the oracle and diffuser
+        iterations = math.floor((math.pi/4) * math.sqrt(N))
+        for _ in range(iterations):
+            qc.compose(oracle, inplace=True)
+            qc.compose(diffuser(N), inplace=True)
 
-    qc.measure(range(N), range(N))
+        qc.measure(range(N), range(N))
 
-    qc_compiled = transpile(qc, backend=backend)
-    result: Result = backend.run(qc_compiled, shots=SHOTS).result()
-    counts: Dict = result.get_counts(qc_compiled)
-    counts = {k: v / SHOTS for k, v in counts.items()}
+        qc_compiled = transpile(qc, backend=backend)
+        result: Result = backend.run(qc_compiled, shots=SHOTS).result()
+        counts: Dict = result.get_counts(qc_compiled)
+        counts = {k: v / SHOTS for k, v in counts.items()}
 
-    plot_histogram(counts)
-    plt.show()
+        plot_histogram(counts)
+        plt.show()
+
+    except Exception as e:
+        print(f"Error: {e}")
 
 
 if __name__ == "__main__":

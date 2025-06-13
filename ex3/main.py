@@ -12,23 +12,28 @@ SHOTS = 500
 
 
 def main():
-    qc = QuantumCircuit(2)
-    qc.h(0)
-    qc.cx(0, 1)
-    qc.measure_all()
 
-    qc.draw("mpl")
+    try:
+        qc = QuantumCircuit(2)
+        qc.h(0)
+        qc.cx(0, 1)
+        qc.measure_all()
 
-    backend = AerSimulator()
-    qc_compile = transpile(qc, backend=backend)
+        qc.draw("mpl")
 
-    job: AerJob = backend.run(qc_compile, shots=SHOTS)
-    result: Result = job.result()
+        backend = AerSimulator()
+        qc_compile = transpile(qc, backend=backend)
 
-    counts: Dict = result.get_counts(qc_compile)
-    counts = {key: value / SHOTS for key, value in counts.items()}
-    plot_histogram(counts)
-    plt.show()
+        job: AerJob = backend.run(qc_compile, shots=SHOTS)
+        result: Result = job.result()
+
+        counts: Dict = result.get_counts(qc_compile)
+        counts = {key: value / SHOTS for key, value in counts.items()}
+        plot_histogram(counts)
+        plt.show()
+
+    except Exception as e:
+        print(f"Error: {e}")
 
 
 if __name__ == "__main__":
