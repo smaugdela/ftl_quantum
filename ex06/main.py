@@ -19,8 +19,8 @@ def state_init(Y: int) -> QuantumCircuit:
     for q in range(Y):
         qc.h(q)
     # Ancilla into |->
+    qc.x(Y)
     qc.h(Y)
-    qc.z(Y)
     return qc
 
 
@@ -28,18 +28,17 @@ def random_oracle_generator(Y: int) -> QuantumCircuit:
     qc = QuantumCircuit(Y + 1, name="Oracle")
 
     num_solutions = random.randint(1, 3)
-    # num_solutions = 1   # Debug
 
     print(f"Number of solutions: {num_solutions}")
     solutions: List[int] = random.sample(range(2 ** Y), num_solutions)
     solutions: List[str] = [format(solution, f"0{Y}b") for solution in solutions]
     print(f"Solutions: {solutions}")
     for solution in solutions:
-        for i, bit in enumerate(solution):
+        for i, bit in enumerate(reversed(solution)):    # reversed because qiskit use little-endian
             if bit == '0':
                 qc.x(i)
         qc.mcx(list(range(Y)), Y)
-        for i, bit in enumerate(solution):
+        for i, bit in enumerate(reversed(solution)):
             if bit == '0':
                 qc.x(i)
 
@@ -85,7 +84,9 @@ def main():
         # Apply 'iterations' time the oracle and diffuser
         iterations = math.floor((math.pi/4) * math.sqrt(N))
         for _ in range(iterations):
+            qc.barrier(range(N + 1))
             qc.compose(oracle, inplace=True)
+            qc.barrier(range(N + 1))
             qc.compose(diffuser(N), inplace=True)
 
         qc.measure(range(N), range(N))

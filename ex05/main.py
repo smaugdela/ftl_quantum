@@ -21,8 +21,10 @@ def deutsch_jozsa_algorithm(oracle: QuantumCircuit) -> QuantumCircuit:
     for qbit in range (0, 4):
         qc.h(qbit)
 
+    qc.barrier(range(4))
     qc.compose(oracle, inplace=True)
 
+    qc.barrier(range(4))
     for qbit in range (0, 3):
         qc.h(qbit)
 
