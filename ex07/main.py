@@ -1,4 +1,4 @@
-# Bernstein-Vazirani
+# Bernstein-Vazirani's Algorithm
 
 import random
 from typing import Dict
@@ -36,8 +36,7 @@ def main():
 
         qc = QuantumCircuit(n + 1, n)
         # Data qubits into |+>
-        for q in range(n):
-            qc.h(q)
+        qc.h(range(n))
         # Ancilla into |->
         qc.x(n)
         qc.h(n)
@@ -46,8 +45,7 @@ def main():
         qc.compose(oracle, inplace=True)
 
         qc.barrier(range(n + 1))
-        for q in range(n):
-            qc.h(q)
+        qc.h(range(n))
         qc.measure(range(n), range(n))
         qc.draw(output='mpl')
 
