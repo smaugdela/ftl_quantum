@@ -1,7 +1,7 @@
 # Simon's Algorithm
 
 import random
-from typing import Dict, List
+from typing import Dict, List, Set
 from qiskit import QuantumCircuit, transpile
 from qiskit.result import Result
 from qiskit.visualization import plot_histogram
@@ -28,28 +28,14 @@ def random_oracle_generator(n: int) -> QuantumCircuit:
 
 
 def compute_s_from_measurements(measured_states: List[str]) -> str:
-    """
-    Compute  the string s from the measured states (list of strings).
-    This function solves the system of equations derived from the measurements.
-    """
-
-    if not measured_states:
-        return ""
-
-    n = len(measured_states[0])
-    s = ['0'] * n
-
-    for i in range(n):
-        # Check if the i-th bit is 1 in all measured states
-        if all(state[i] == '1' for state in measured_states):
-            s[i] = '1'
-
-    return ''.join(s)
+    raise NotImplementedError("This algorithm is not implemented yet.")
 
 
 def main():
 
     try:
+
+        raise NotImplementedError("This algorithm is not implemented yet.")
 
         backend = AerSimulator()
 
@@ -69,13 +55,17 @@ def main():
         qc.draw(output='mpl')
 
         qc_compiled = transpile(qc, backend=backend)
-        result: Result = backend.run(qc_compiled, shots=SHOTS).result()
-        counts: Dict = result.get_counts(qc_compiled)
-        counts = {k: v / SHOTS for k, v in counts.items()}
 
-        measured_states = list(counts.keys())
-        print(f"Measured states: {measured_states}")
-        s = compute_s_from_measurements(measured_states)
+        measured_states: Set[str] = set()
+        while len(measured_states) < n:
+            result: Result = backend.run(qc_compiled, shots=SHOTS).result()
+            counts: Dict = result.get_counts(qc_compiled)
+            counts = {k: v / SHOTS for k, v in counts.items()}
+
+            measured_states.update(set(counts.keys()))
+            print(f"Measured states: {measured_states}")
+
+        s = compute_s_from_measurements(list(measured_states))
         print(f"Computed s: {s}")
 
         plot_histogram(counts)
